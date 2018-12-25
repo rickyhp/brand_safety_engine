@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html ng-app="BrandSafetyApp">
+  <head>
+    <title>Brand Safety Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- styles -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+  </head>
+    <body ng-controller="BrandSafetyController">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-5 col-sm-offset-1">
+          <h1>Brand Safety Engine</h1>
+          <br>
+          <form role="form" ng-submit="getResults()">
+            <div class="form-group">
+              <input type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." style="max-width: 300px;" ng-model="url" required>
+              
+            </div>
+            {% raw %}              
+              <button type="submit" class="btn btn-primary" ng-disabled="loading">{{ submitButtonText }}</button>
+              <p ng-show="showResultPanel">{{ checkInterval }}</p>
+            {% endraw %}          
+            
+            
+          </form>
+          <div class="alert alert-danger" role="alert" ng-show='urlError'>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            <span>There was an error submitting your URL.<br>
+            Please check to make sure it is valid before trying again.</span>
+          </div>
+          
+          <div id="finalResults" ng-show='conclusion'>   
+          {% raw %}       	
+          	<h2>Conclusion:  <font color="{{finalResults['font_color']}}">{{finalResults['advice']}}</font> </h2>
+          {% endraw %}
+          	<table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Probability</th>
+                </tr>
+                
+              </thead>
+              <tbody>              	
+              {% raw %}
+                <tr ng-repeat="(key, value) in finalResults['probabilities']">
+                  <td><font size="4">{{key}}</td>
+                  <td><font size="4">{{value}}</td>                
+                </tr>
+              {% endraw %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-sm-5 col-sm-offset-1" ng-show="showResultPanel">
+          <h2>Suspicious Contents</h2>
+          
+          <br>
+          <div id="results">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Probability</th>
+                </tr>
+                
+              </thead>
+              <tbody>
+              	<tr>
+                	<td colspan="2" ng-show="loading"><img class="col-sm-3 col-sm-offset-4" src="{{ url_for('static',
+            filename='spinner.gif') }}" /></td>
+                </tr>
+              {% raw %}
+                <tr ng-repeat="result in results">
+                  <td><img ng-src="{{ result['image_name'] }}" width = "200" height="auto" /></td>
+                  <td>
+                  	<table ng-repeat="(key,value) in result['result']">
+	                  	<tr>
+	                  		<td><font size="4">{{key}} : {{value}}</font></td> 
+	                  	</tr>
+                  	</table>
+                  </td>                
+                </tr>
+              {% endraw %}
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+      <br>
+      
+    </div>
+    <br><br>
+    <!-- scripts -->
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>
