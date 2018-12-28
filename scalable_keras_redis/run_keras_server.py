@@ -152,4 +152,4 @@ if __name__ == "__main__":
 	mongo.Drop_DataBase(settings.MONGODB_NAME)
 	# start the web server
 	print("* Starting web service...")
-	app.run()
+	app.run(host='0.0.0.0')
