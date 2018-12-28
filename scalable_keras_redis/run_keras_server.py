@@ -35,6 +35,7 @@ def predict():
 		website = data["website"]
 		results = mongo.Query({"website" : website.strip()})
 		result_data = {}
+		result_data[settings.Website_Folder_Column] = ''
 		if results.count() > 0:
 			s = dumps(results)
 			print("result dumps: " + s)
