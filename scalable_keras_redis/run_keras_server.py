@@ -100,12 +100,14 @@ def get_results():
 def get_final_results():
 	data = json.loads(request.data.decode())
 	print("json: "+json.dumps(data))
-	website_folder = data[settings.Website_Folder_Column]
+	website_folder = None
 	finalResults = {}
 	font_color = settings.Unknown_Color
 	finalResults[settings.Advice] = settings.Unknown_Value
 	finalResults[settings.Font_Color] = font_color
 	finalResults[settings.Probabilities] = settings.default_result()
+	if settings.Website_Folder_Column in data:
+		website_folder = data[settings.Website_Folder_Column]
 	if website_folder is not None:
 		group_dict = {}
 		group_dict['_id'] = "$" + settings.Website_Folder_Column
