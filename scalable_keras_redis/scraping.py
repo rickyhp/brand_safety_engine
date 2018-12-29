@@ -31,7 +31,8 @@ procs = []
 terminate = False
 firefox_path = ''
 if platform == "linux" or platform == "linux2":
-    phantomjs_path = os.path.abspath('./tools/linux/geckodriver')
+    #phantomjs_path = os.path.abspath('./tools/linux/geckodriver')
+    firefox_path = os.path.abspath('./tools/linux/geckodriver')
 if platform == "win32":
     firefox_path = os.path.abspath('./tools/windows/geckodriver.exe')
 
