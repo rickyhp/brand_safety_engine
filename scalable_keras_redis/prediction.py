@@ -1,4 +1,5 @@
 from classifiers import Alcohol_Model, Gambling_Model
+from classify_nsfw import Nude_Model
 import mongodb_helper
 from mongodb_helper import Mongodb_helper
 from pymongo import MongoClient
@@ -10,8 +11,8 @@ import settings
 
 model = Alcohol_Model()
 gm_model = Gambling_Model()
+nude_model = Nude_Model()
 lock_object = Lock()
-# nsfw_model = Nudity_Model()
 
 def Generate_Record(website_folder, url, image_name, result, suspicous):
     return {settings.Website_Folder_Column : website_folder,
@@ -28,7 +29,7 @@ class Prediction(object):
         self.url = url
         self.alcohol = model
         self.gambling = gm_model
-#         self.nudity = nsfw_model
+        self.nudity = nude_model
         self.is_slices = is_slices
         self.mongo_helper = Mongodb_helper()
         self.results = {}
@@ -44,10 +45,13 @@ class Prediction(object):
             out_queue = queue.Queue()
             t1 = Thread(target=self._thread_func, args = (self.alcohol.predict, self.image_path, out_queue, settings.Category_Alcohol, lock_object))
             t2 = Thread(target=self._thread_func, args = (self.gambling.predict, self.image_path, out_queue, settings.Category_Gambing, lock_object))
+            t3 = Thread(target=self._thread_func, args = (self.nudity.predict, self.image_path, out_queue, settings.Category_Nudity, lock_object))
             t1.start()
             t2.start()
+            t3.start()
             t1.join()
             t2.join()
+            t3.join()
             dict = settings.default_result()
 #             dict = {'alcohol' : alcohol_score, 'gambling' : gambling_score}
             max_pred = 0
