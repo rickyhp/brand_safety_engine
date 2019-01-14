@@ -20,7 +20,9 @@
 
       // get the URL from the input
       var userInput = $scope.url;
-      
+      var includeGambling = $scope.includeGambling;
+      var includeAlcohol = $scope.includeAlcohol;
+      var includeNudity = $scope.includeNudity;
       $scope.showResultPanel = true;
       $scope.results = null;
       $scope.loading = true;
@@ -32,7 +34,7 @@
 //      $scope.checkInterval = index.toString();
       var promise = $interval(callAtinterval, 1000);
       
-      $http({method : 'POST', url: '/predict', data : {'website' : userInput}})
+      $http({method : 'POST', url: '/predict', data : {'website' : userInput, 'includeGambling' : includeGambling, 'includeAlcohol' : includeAlcohol, 'includeNudity' : includeNudity}})
       .then(function successCallback(response){
     	  $log.log(results);
     	  $interval.cancel(promise);

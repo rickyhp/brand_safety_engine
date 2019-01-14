@@ -33,6 +33,18 @@ def predict():
 		data = json.loads(request.data.decode())
 		print('data: ' + request.data.decode())
 		website = data["website"]
+		includeGambling = data['includeGambling'] == "yes" if "includeGambling" in data.keys() else False
+		includeAlcohol = data['includeAlcohol'] == "yes" if "includeAlcohol" in data.keys() else False
+		includeNudity = data['includeNudity'] == "yes" if "includeNudity" in data.keys() else False
+		dict_map = {settings.Category_Gambling: includeGambling, settings.Category_Alcohol : includeAlcohol, settings.Category_Nudity : includeNudity}
+		for k,v in dict_map.items():
+			if not v:
+				if k in settings.Categories_In_Program:
+					settings.Categories_In_Program.remove(k)
+			else:
+				if k not in settings.Categories_In_Program:
+					settings.Categories_In_Program.append(k)
+		print(str(includeGambling))
 		results = mongo.Query({"website" : website.strip()})
 		result_data = {}
 		result_data[settings.Website_Folder_Column] = ''

@@ -18,6 +18,11 @@
               <input type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." style="max-width: 300px;" ng-model="url" required>
               
             </div>
+            <h5>Options:</h5>
+            <input type="checkbox" ng-model="includeAlcohol" aria-label="Checkbox 2" ng-true-value="'yes'" ng-false-value="'no'">Alcohol</input>
+            <input type="checkbox" ng-model="includeGambling" aria-label="Checkbox 2" ng-true-value="'yes'" ng-false-value="'no'">Gambling</input>
+            <input type="checkbox" ng-model="includeNudity" aria-label="Checkbox 2" ng-true-value="'yes'" ng-false-value="'no'">Nudity</input>
+            <br>
             {% raw %}              
               <button type="submit" class="btn btn-primary" ng-disabled="loading">{{ submitButtonText }}</button>
               <p ng-show="showResultPanel">{{ checkInterval }}</p>

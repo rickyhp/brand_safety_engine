@@ -10,7 +10,7 @@ Result_Column = 'result'
 Suspicious_Column = 'suspicious'
 
 Category_Alcohol = 'Alcohol'
-Category_Gambing = 'Gambling'
+Category_Gambling = 'Gambling'
 Category_Nudity = 'Nudity'
 
 ############# Threshold #########################
@@ -35,7 +35,7 @@ Unsafe_Color = 'red'
 
 ############# Models will be used in the program ##########################
 
-Categories_In_Program = [Category_Alcohol, Category_Gambing, Category_Nudity]
+Categories_In_Program = [Category_Alcohol, Category_Gambling, Category_Nudity]
 
 def default_result():
     result = {}

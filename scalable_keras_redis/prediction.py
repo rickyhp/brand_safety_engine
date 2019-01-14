@@ -43,15 +43,24 @@ class Prediction(object):
 #             alcohol_score = self.alcohol.predict(self.image_path)
 #             gambling_score = self.gambling.predict(self.image_path)
             out_queue = queue.Queue()
-            t1 = Thread(target=self._thread_func, args = (self.alcohol.predict, self.image_path, out_queue, settings.Category_Alcohol, lock_object))
-            t2 = Thread(target=self._thread_func, args = (self.gambling.predict, self.image_path, out_queue, settings.Category_Gambing, lock_object))
-            t3 = Thread(target=self._thread_func, args = (self.nudity.predict, self.image_path, out_queue, settings.Category_Nudity, lock_object))
-            t1.start()
-            t2.start()
-            t3.start()
-            t1.join()
-            t2.join()
-            t3.join()
+            threads = []
+            for x in settings.Categories_In_Program:
+                if x == settings.Category_Alcohol:
+                    threads.append(Thread(target=self._thread_func, args = (self.alcohol.predict, self.image_path, out_queue, settings.Category_Alcohol, lock_object)))
+                if x == settings.Category_Gambling:
+                    threads.append(Thread(target=self._thread_func, args = (self.gambling.predict, self.image_path, out_queue, settings.Category_Gambling, lock_object)))
+                if x == settings.Category_Nudity:
+                    threads.append(Thread(target=self._thread_func, args = (self.nudity.predict, self.image_path, out_queue, settings.Category_Nudity, lock_object)))
+            # put nudity thread here
+            for t in threads:
+                t.start()
+            for th in threads:
+                th.join()
+#             t2 = 
+#             t1.start()
+#             t2.start()
+#             t1.join()
+#             t2.join()
             dict = settings.default_result()
 #             dict = {'alcohol' : alcohol_score, 'gambling' : gambling_score}
             max_pred = 0
