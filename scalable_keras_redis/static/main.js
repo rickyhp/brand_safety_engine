@@ -38,7 +38,7 @@
       .then(function successCallback(response){
           var data = response.data;
           $log.log(data);
-          $scope.textalcohol = 1-data.combine_score;
+          $scope.textalcohol = (1-data.combine_score).toPrecision(3);
       }, function errorCallback(response){
         $log.log(response);
       });
