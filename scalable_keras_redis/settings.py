@@ -13,6 +13,8 @@ Category_Alcohol = 'Alcohol'
 Category_Gambling = 'Gambling'
 Category_Nudity = 'Nudity'
 
+Text_url = 'http://ec2-34-213-187-5.us-west-2.compute.amazonaws.com:5001'
+
 ############# Threshold #########################
 
 advice_threshold_unsafe = 0.9
@@ -24,6 +26,7 @@ suspicious_threshold = 0.7
 Advice = 'advice'
 Font_Color = 'font_color'
 Probabilities = 'probabilities'
+Text = 'text'
 
 Unknown_Value = 'Unknown'
 Safe_Value = 'Safe'
