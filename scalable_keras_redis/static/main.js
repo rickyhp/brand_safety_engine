@@ -29,8 +29,22 @@
       $scope.submitButtonText = 'Analyzing...';
       $scope.urlerror = false;
       $scope.conclusion = false;
+
+      $scope.textalcohol = -1;
+      $scope.textgambling = -1;
+      $scope.textnudity = -1;
       
+      $http({method : 'GET', url: 'http://ec2-18-236-117-209.us-west-2.compute.amazonaws.com:5001/alcohol?url=' + $scope.url})
+      .then(function successCallback(response){
+          var data = response.data;
+          $log.log(data);
+          $scope.textalcohol = 1-data.combine_score;
+      }, function errorCallback(response){
+        $log.log(response);
+      });
+
       var index = 0;
+
 //      $scope.checkInterval = index.toString();
       var promise = $interval(callAtinterval, 1000);
       
@@ -39,7 +53,7 @@
     	  $log.log(results);
     	  $interval.cancel(promise);
     	  $timeout(callAtTimeout, 500);
-    	  $http({method : 'POST', url: '/finalresults', data:{'website_folder' : response.data['website_folder']}})
+    	  $http({method : 'POST', url: '/finalresults', data:{'website_folder' : response.data['website_folder'], 'website' : $scope.url}})
           .then(function successCallback(response){
         	$scope.conclusion = true;
         	$scope.finalResults = response.data;
