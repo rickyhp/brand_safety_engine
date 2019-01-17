@@ -46,7 +46,7 @@ class Nude_Model(object):
         image_data = open(image_path, 'rb').read()
         # Classify.
         scores = self.caffe_preprocess_and_compute(image_data, output_layers=['prob'])
-        return scores[1]
+        return float('%.3f' % scores[1])
     
     def caffe_preprocess_and_compute(self, pimg, 
                                  output_layers=None):
