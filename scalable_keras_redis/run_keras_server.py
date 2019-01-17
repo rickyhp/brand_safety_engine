@@ -113,14 +113,18 @@ def get_results():
 def get_final_results():
 	data = json.loads(request.data.decode())
 	print("json: "+json.dumps(data))
+	website = data['website']
 	website_folder = None
 	finalResults = {}
 	font_color = settings.Unknown_Color
 	finalResults[settings.Advice] = settings.Unknown_Value
 	finalResults[settings.Font_Color] = font_color
 	finalResults[settings.Probabilities] = settings.default_result()
+	r = requests.get(settings.Text_url + '/alcohol?url=' + website.strip())
+	finalResults[settings.Category_Alcohol] = r.text
 	if settings.Website_Folder_Column in data:
 		website_folder = data[settings.Website_Folder_Column]
+
 	if website_folder is not None:
 		group_dict = {}
 		group_dict['_id'] = "$" + settings.Website_Folder_Column
@@ -152,6 +156,7 @@ def get_final_results():
 				finalResults[settings.Advice] = advice
 				finalResults[settings.Font_Color] = font_color
 				finalResults[settings.Probabilities] = probabilities
+
 				return jsonify(finalResults)
 	return jsonify(finalResults)
 
