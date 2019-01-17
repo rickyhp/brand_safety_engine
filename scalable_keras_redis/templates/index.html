@@ -40,12 +40,14 @@
           <div id="finalResults" ng-show='conclusion'>   
           {% raw %}       	
           	<h2>Conclusion:  <font color="{{finalResults['font_color']}}">{{finalResults['advice']}}</font> </h2>
+            <!--<h2>Text: {{finalResults['Alcohol']}}</h2>-->
           {% endraw %}
           	<table class="table table-striped">
               <thead>
                 <tr>
                   <th>Category</th>
-                  <th>Probability</th>
+                  <th>Image Score</th>
+                  <th>Text Score</th>
                 </tr>
                 
               </thead>
@@ -53,7 +55,10 @@
               {% raw %}
                 <tr ng-repeat="(key, value) in finalResults['probabilities']">
                   <td><font size="4">{{key}}</td>
-                  <td><font size="4">{{value}}</td>                
+                  <td><font size="4">{{value}}</td>
+                  <td ng-if="key == 'Alcohol'"><font size="4">{{textalcohol}}</td>
+                  <td ng-if="key == 'Gambling'"><font size="4">{{textgambling}}</td>
+                  <td ng-if="key == 'Nudity'"><font size="4">{{textnudity}}</td>
                 </tr>
               {% endraw %}
               </tbody>
