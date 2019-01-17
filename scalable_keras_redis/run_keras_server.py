@@ -37,6 +37,8 @@ def predict():
 		includeAlcohol = data['includeAlcohol'] == "yes" if "includeAlcohol" in data.keys() else False
 		includeNudity = data['includeNudity'] == "yes" if "includeNudity" in data.keys() else False
 		dict_map = {settings.Category_Gambling: includeGambling, settings.Category_Alcohol : includeAlcohol, settings.Category_Nudity : includeNudity}
+		query_dict = {}
+		query_dict['website'] = website.strip()
 		for k,v in dict_map.items():
 			if not v:
 				if k in settings.Categories_In_Program:
@@ -44,8 +46,9 @@ def predict():
 			else:
 				if k not in settings.Categories_In_Program:
 					settings.Categories_In_Program.append(k)
+				query_dict["result." + k] = {"$exists" : True}
 		print(str(includeGambling))
-		results = mongo.Query({"website" : website.strip()})
+		results = mongo.Query(query_dict)
 		result_data = {}
 		result_data[settings.Website_Folder_Column] = ''
 		if results.count() > 0:
@@ -103,9 +106,19 @@ def jsonify_result(results, one_record = False):
 def get_results():
 	data = json.loads(request.data.decode())
 	website = data["web"]
-	folderName = directory_utils.CreateFolderName(website)
-	query = {"$and":[{settings.Website_Column : website}, {settings.Suspicious_Column : True}]}
-	results = mongo.Query(query, settings.Result_Column, 10)	
+	includeGambling = data['includeGambling'] == "yes" if "includeGambling" in data.keys() else False
+	includeAlcohol = data['includeAlcohol'] == "yes" if "includeAlcohol" in data.keys() else False
+	includeNudity = data['includeNudity'] == "yes" if "includeNudity" in data.keys() else False
+	dict_map = {settings.Category_Gambling: includeGambling, settings.Category_Alcohol : includeAlcohol, settings.Category_Nudity : includeNudity}
+	query_dict = {}
+	query_dict['website'] = website.strip()
+	query_dict[settings.Suspicious_Column] = True
+	for k,v in dict_map.items():
+		if v:
+			if k in settings.Categories_In_Program:
+				query_dict["result." + k] = {"$exists" : True}
+# 	folderName = directory_utils.CreateFolderName(website)	
+	results = mongo.Query(query_dict, settings.Result_Column, 10)	
 	
 	return jsonify_result(results)
 
@@ -124,7 +137,6 @@ def get_final_results():
 	finalResults[settings.Category_Alcohol] = r.text
 	if settings.Website_Folder_Column in data:
 		website_folder = data[settings.Website_Folder_Column]
-
 	if website_folder is not None:
 		group_dict = {}
 		group_dict['_id'] = "$" + settings.Website_Folder_Column
@@ -156,7 +168,6 @@ def get_final_results():
 				finalResults[settings.Advice] = advice
 				finalResults[settings.Font_Color] = font_color
 				finalResults[settings.Probabilities] = probabilities
-
 				return jsonify(finalResults)
 	return jsonify(finalResults)
 

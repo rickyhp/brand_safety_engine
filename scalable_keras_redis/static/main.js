@@ -29,8 +29,8 @@
       $scope.submitButtonText = 'Analyzing...';
       $scope.urlerror = false;
       $scope.conclusion = false;
-
-      $scope.textalcohol = -1;
+      
+	  $scope.textalcohol = -1;
       $scope.textgambling = -1;
       $scope.textnudity = -1;
       
@@ -44,7 +44,6 @@
       });
 
       var index = 0;
-
 //      $scope.checkInterval = index.toString();
       var promise = $interval(callAtinterval, 1000);
       
@@ -63,14 +62,14 @@
       });
     $scope.checkInterval = default_info;
       function callAtTimeout(){    	  
-    	  getBrandSafety(userInput, true);
+    	  getBrandSafety(userInput, includeGambling, includeAlcohol, includeNudity, true);
       }
       
       function callAtinterval() {
     	  index +=1;
     	  $scope.checkInterval = "Spent " + index.toString() + " seconds";
     	  if(index % 2 ==0){
-    		  getBrandSafety(userInput, false);
+    		  getBrandSafety(userInput, includeGambling, includeAlcohol, includeNudity, false);
     	  }      	
       }
       
@@ -78,13 +77,13 @@
     
     
 
-    function getBrandSafety(userInput, reset) {
+    function getBrandSafety(userInput, includeGambling, includeAlcohol, includeNudity, reset) {
 
       var timeout = '';
 
       var poller = function() {
         // fire another request
-        $http({method : 'POST', url: '/result', data:{'web' : userInput}})
+        $http({method : 'POST', url: '/result', data:{'web' : userInput, 'includeGambling' : includeGambling, 'includeAlcohol' : includeAlcohol, 'includeNudity' : includeNudity}})
         .then(function successCallback(response){
         	  $scope.loading = !reset;
               $scope.submitButtonText = reset ? "Submit" : "Analyzing...";
