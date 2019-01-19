@@ -23,18 +23,21 @@
       var includeGambling = $scope.includeGambling;
       var includeAlcohol = $scope.includeAlcohol;
       var includeNudity = $scope.includeNudity;
+      var runImage = $scope.runImage;
+      var runText = $scope.runText;
       $scope.showResultPanel = true;
       $scope.results = null;
       $scope.loading = true;
       $scope.submitButtonText = 'Analyzing...';
       $scope.urlerror = false;
       $scope.conclusion = false;
-      
+	  
 	  $scope.textalcohol = -1;
       $scope.textgambling = -1;
       $scope.textnudity = -1;
       
-      $http({method : 'GET', url: 'http://ec2-18-236-117-209.us-west-2.compute.amazonaws.com:5001/alcohol?url=' + $scope.url})
+	  if(runText){
+		  $http({method : 'GET', url: 'http://ec2-18-236-117-209.us-west-2.compute.amazonaws.com:5001/alcohol?url=' + $scope.url})
       .then(function successCallback(response){
           var data = response.data;
           $log.log(data);
@@ -42,17 +45,20 @@
       }, function errorCallback(response){
         $log.log(response);
       });
+	  }
+      
 
+      
       var index = 0;
 //      $scope.checkInterval = index.toString();
       var promise = $interval(callAtinterval, 1000);
       
-      $http({method : 'POST', url: '/predict', data : {'website' : userInput, 'includeGambling' : includeGambling, 'includeAlcohol' : includeAlcohol, 'includeNudity' : includeNudity}})
+      $http({method : 'POST', url: '/predict', data : {'website' : userInput, 'runImage': runImage, 'runText': runText, 'includeGambling' : includeGambling, 'includeAlcohol' : includeAlcohol, 'includeNudity' : includeNudity}})
       .then(function successCallback(response){
     	  $log.log(results);
     	  $interval.cancel(promise);
     	  $timeout(callAtTimeout, 500);
-    	  $http({method : 'POST', url: '/finalresults', data:{'website_folder' : response.data['website_folder'], 'website' : $scope.url}})
+    	  $http({method : 'POST', url: '/finalresults', data:{'website_folder' : response.data['website_folder'], 'runImage': $scope.runImage, 'runText': $scope.runText}})
           .then(function successCallback(response){
         	$scope.conclusion = true;
         	$scope.finalResults = response.data;

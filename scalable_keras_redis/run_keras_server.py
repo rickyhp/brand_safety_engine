@@ -29,6 +29,8 @@ mongo = None
 def predict():
 	# /predicturl?url=http://xxx.com/abcnews
 	data = {"website_folder": ""}
+	result_data = {}
+	result_data[settings.Website_Folder_Column] = ''
 	try:		
 		data = json.loads(request.data.decode())
 		print('data: ' + request.data.decode())
@@ -36,38 +38,39 @@ def predict():
 		includeGambling = data['includeGambling'] == "yes" if "includeGambling" in data.keys() else False
 		includeAlcohol = data['includeAlcohol'] == "yes" if "includeAlcohol" in data.keys() else False
 		includeNudity = data['includeNudity'] == "yes" if "includeNudity" in data.keys() else False
+		runImage = data['runImage'] == "yes" if "runImage" in data.keys() else False
+		runText = data['runText'] == "yes" if "runText" in data.keys() else False
 		dict_map = {settings.Category_Gambling: includeGambling, settings.Category_Alcohol : includeAlcohol, settings.Category_Nudity : includeNudity}
-		query_dict = {}
-		query_dict['website'] = website.strip()
-		for k,v in dict_map.items():
-			if not v:
-				if k in settings.Categories_In_Program:
-					settings.Categories_In_Program.remove(k)
+		if runImage:
+			query_dict = {}
+			query_dict['website'] = website.strip()
+			for k,v in dict_map.items():
+				if not v:
+					if k in settings.Categories_In_Program:
+						settings.Categories_In_Program.remove(k)
+				else:
+					if k not in settings.Categories_In_Program:
+						settings.Categories_In_Program.append(k)
+					query_dict["result." + k] = {"$exists" : True}
+			print(str(includeGambling))
+			results = mongo.Query(query_dict)
+			if results.count() > 0:
+				s = dumps(results)
+				print("result dumps: " + s)
+				st = json.loads(s)
+				print("len" + str(len(st)))
+				if st is not None and len(st) > 0:
+					x = st[0]
+					result_data = {settings.Website_Folder_Column : x[settings.Website_Folder_Column], settings.Website_Column : x[settings.Website_Column], settings.Result_Column : x[settings.Result_Column], settings.Image_Name_Column : x[settings.Image_Name_Column]}
+					print("jsonify_result : "+dumps(result_data))
+					return jsonify(result_data)
 			else:
-				if k not in settings.Categories_In_Program:
-					settings.Categories_In_Program.append(k)
-				query_dict["result." + k] = {"$exists" : True}
-		print(str(includeGambling))
-		results = mongo.Query(query_dict)
-		result_data = {}
-		result_data[settings.Website_Folder_Column] = ''
-		if results.count() > 0:
-			s = dumps(results)
-			print("result dumps: " + s)
-			st = json.loads(s)
-			print("len" + str(len(st)))
-			if st is not None and len(st) > 0:
-				x = st[0]
-				result_data = {settings.Website_Folder_Column : x[settings.Website_Folder_Column], settings.Website_Column : x[settings.Website_Column], settings.Result_Column : x[settings.Result_Column], settings.Image_Name_Column : x[settings.Image_Name_Column]}
-				print("jsonify_result : "+dumps(result_data))
-				return jsonify(result_data)
-		else:
-			folderName = directory_utils.CreateFolderName(website)
-			print('scraping images at: ', website)
-			print('folder name: ' + folderName)
-			scraping = Scraping_Image(website, folderName)
-			if scraping.run():
-				result_data[settings.Website_Folder_Column] = folderName
+				folderName = directory_utils.CreateFolderName(website)
+				print('scraping images at: ', website)
+				print('folder name: ' + folderName)
+				scraping = Scraping_Image(website, folderName)
+				if scraping.run():
+					result_data[settings.Website_Folder_Column] = folderName
 	except Exception as e:
 		print("error: " + e.__str__())
 		pass
@@ -129,44 +132,46 @@ def get_final_results():
 	website_folder = None
 	finalResults = {}
 	font_color = settings.Unknown_Color
-	finalResults[settings.Advice] = settings.Unknown_Value
-	finalResults[settings.Font_Color] = font_color
-	finalResults[settings.Probabilities] = settings.default_result()
-
-	if settings.Website_Folder_Column in data:
-		website_folder = data[settings.Website_Folder_Column]
-	if website_folder is not None:
-		group_dict = {}
-		group_dict['_id'] = "$" + settings.Website_Folder_Column
-		for category in settings.Categories_In_Program:
-			group_dict[category] = {"$max" : "${0}.{1}".format(settings.Result_Column, category)}
-		pipe_line = [{"$match": {settings.Website_Folder_Column : website_folder}}, {"$group": group_dict}]
-		result = mongo.Query_Aggregate(pipe_line)
-		if result is not None:
-			s = dumps(result)
-			st = json.loads(s)
-			print("result : " + s)
-			if len(st)>0:
-				json_object = st[0]
-				max_value = -1
-				probabilities = {}
-				for key, value in json_object.items():
-					if isinstance(value, float) or isinstance(value, int):
-						probabilities[key] = value
-						if value > max_value:
-							max_value = value;
-				print(str(max_value))
-				if max_value >= settings.advice_threshold_unsafe:
-					advice = settings.Unsafe_Value
-					font_color = settings.Unsafe_Color
-				else:
-					advice = settings.Safe_Value
-					font_color = settings.Safe_Color
-				
-				finalResults[settings.Advice] = advice
-				finalResults[settings.Font_Color] = font_color
-				finalResults[settings.Probabilities] = probabilities
-				return jsonify(finalResults)
+	
+	runImage = data['runImage'] == "yes" if "runImage" in data.keys() else False
+	runText = data['runText'] == "yes" if "runText" in data.keys() else False
+	if runImage:
+		finalResults[settings.Advice] = settings.Unknown_Value
+		finalResults[settings.Font_Color] = font_color
+		finalResults[settings.Probabilities] = settings.default_result()
+		if settings.Website_Folder_Column in data:
+			website_folder = data[settings.Website_Folder_Column]
+		if website_folder is not None:
+			group_dict = {}
+			group_dict['_id'] = "$" + settings.Website_Folder_Column
+			for category in settings.Categories_In_Program:
+				group_dict[category] = {"$max" : "${0}.{1}".format(settings.Result_Column, category)}
+			pipe_line = [{"$match": {settings.Website_Folder_Column : website_folder}}, {"$group": group_dict}]
+			result = mongo.Query_Aggregate(pipe_line)
+			if result is not None:
+				s = dumps(result)
+				st = json.loads(s)
+				print("result : " + s)
+				if len(st)>0:
+					json_object = st[0]
+					max_value = -1
+					probabilities = {}
+					for key, value in json_object.items():
+						if isinstance(value, float) or isinstance(value, int):
+							probabilities[key] = value
+							if value > max_value:
+								max_value = value;
+					print(str(max_value))
+					if max_value >= settings.advice_threshold_unsafe:
+						advice = settings.Unsafe_Value
+						font_color = settings.Unsafe_Color
+					else:
+						advice = settings.Safe_Value
+						font_color = settings.Safe_Color
+					
+					finalResults[settings.Advice] = advice
+					finalResults[settings.Font_Color] = font_color
+					finalResults[settings.Probabilities] = probabilities
 	return jsonify(finalResults)
 
 # if this is the main thread of execution first load the model and
