@@ -120,6 +120,8 @@ def get_results():
 		if v:
 			if k in settings.Categories_In_Program:
 				query_dict["result." + k] = {"$exists" : True}
+		else:
+			query_dict["result." + k] = {"$exists" : False}
 # 	folderName = directory_utils.CreateFolderName(website)	
 	results = mongo.Query(query_dict, settings.Result_Column, 10)	
 	
