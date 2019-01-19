@@ -36,7 +36,7 @@
       $scope.textgambling = -1;
       $scope.textnudity = -1;
       
-	  if(runText){
+	  if(runText=='yes'){
 		  $http({method : 'GET', url: 'http://ec2-18-236-117-209.us-west-2.compute.amazonaws.com:5001/alcohol?url=' + $scope.url})
       .then(function successCallback(response){
           var data = response.data;
