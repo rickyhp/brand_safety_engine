@@ -1,5 +1,5 @@
 from classifiers import Alcohol_Model, Gambling_Model
-# from classify_nsfw import Nude_Model
+from classify_nsfw import Nude_Model
 import mongodb_helper
 from mongodb_helper import Mongodb_helper
 from pymongo import MongoClient
@@ -29,7 +29,7 @@ class Prediction(object):
         self.url = url
         self.alcohol = model
         self.gambling = gm_model
-		self.nudity = nude_model
+        self.nudity = nude_model
         self.is_slices = is_slices
         self.mongo_helper = Mongodb_helper()
         self.results = {}
@@ -49,8 +49,8 @@ class Prediction(object):
                     threads.append(Thread(target=self._thread_func, args = (self.alcohol.predict, self.image_path, out_queue, settings.Category_Alcohol, lock_object)))
                 if x == settings.Category_Gambling:
                     threads.append(Thread(target=self._thread_func, args = (self.gambling.predict, self.image_path, out_queue, settings.Category_Gambling, lock_object)))
-				if x == settings.Category_Nudity:
-					threads.append(Thread(target=self._thread_func, args = (self.nudity.predict, self.image_path, out_queue, settings.Category_Nudity, lock_object)))
+                if x == settings.Category_Nudity:
+                    threads.append(Thread(target=self._thread_func, args = (self.nudity.predict, self.image_path, out_queue, settings.Category_Nudity, lock_object)))
             for t in threads:
                 t.start()
             for th in threads:
