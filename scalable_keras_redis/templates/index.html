@@ -15,8 +15,7 @@
           <br>
           <form role="form" ng-submit="getResults()">
             <div class="form-group">
-              <textarea type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." rows="10" cols="10" ng-model="url" required/>
-              
+              <textarea name="url" class="form-control" id="url-box" rows="10" cols="10" wrap="soft" ng-model="url"></textarea>
             </div>
             <h5>Analysis on:</h5>
             <input type="checkbox" ng-model="includeAlcohol" aria-label="Checkbox 2" ng-true-value="'yes'" ng-false-value="'no'">Alcohol</input>
