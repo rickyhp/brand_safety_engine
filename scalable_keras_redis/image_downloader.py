@@ -9,7 +9,7 @@ import settings
 from directory_utils import Folder_Utils
 from prediction import Prediction
 
-valid_image_type = ["jpg", "jpeg","gif","png", "tif"]
+valid_image_type = ["jpg", "jpeg","gif","png", "tif", "bmp"]
 
 def is_valid_image(extension):
     for x in valid_image_type:
@@ -36,7 +36,7 @@ class Download_Image(object):
                     extension = mimetypes.guess_extension(content_type)
                 except Exception as e:
                     print(e.__str__())
-                if extension is not None and is_valid_image(extension):
+                if (extension is None and is_valid_image(image)) or is_valid_image(extension):
                     image_name = "{0}{1}".format(str(index), extension)
                     image_path = os.path.join(folder, image_name)
                     with open(image_path, "wb") as f:                    
