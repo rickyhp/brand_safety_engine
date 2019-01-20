@@ -36,6 +36,10 @@ Unknown_Color = 'yellow'
 Safe_Color = 'green'
 Unsafe_Color = 'red'
 
+slice_width = 500
+slice_height = 500
+slice_step = 250
+
 ############# Models will be used in the program ##########################
 
 Categories_In_Program = [Category_Alcohol, Category_Gambling, Category_Nudity]

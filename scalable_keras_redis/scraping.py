@@ -25,13 +25,13 @@ from threading import Lock, Thread
 import multiprocessing as mp
 from docutils.nodes import target
 import path_config
+import settings
 
 lock = Lock()
 procs = []
 terminate = False
 firefox_path = ''
 if platform == "linux" or platform == "linux2":
-    #phantomjs_path = os.path.abspath('./tools/linux/geckodriver')
     firefox_path = os.path.abspath('./tools/linux/geckodriver')
 if platform == "win32":
     firefox_path = os.path.abspath('./tools/windows/geckodriver.exe')
@@ -105,7 +105,7 @@ class Scraping_Image(object):
 #             self.browser.quit()
             if data is not None and folder is not None and screenshot_name is not None:
                 t1 = Thread(target=self._download, args=(data, folderName, lock, terminate))
-                t2 = Thread(target=image_utils.slice_image, args=(self.url, folderName, os.path.join(folder, "slices"), screenshot_name, 300,300,150, lock, terminate))
+                t2 = Thread(target=image_utils.slice_image, args=(self.url, folderName, os.path.join(folder, "slices"), screenshot_name, settings.slice_width,settings.slice_height,settings.slice_step, lock, terminate))
                 t1.start()
                 t2.start()
                 t1.join()

@@ -9,6 +9,14 @@ import settings
 from directory_utils import Folder_Utils
 from prediction import Prediction
 
+valid_image_type = ["jpg", "jpeg","gif","png", "tif"]
+
+def is_valid_image(extension):
+    for x in valid_image_type:
+        if x in extension.lower():
+            return True
+    return False 
+
 class Download_Image(object):
     def __init__(self, html_data, folderName, website, create_folder=False):
         self.folderName = folderName
@@ -28,18 +36,18 @@ class Download_Image(object):
                     extension = mimetypes.guess_extension(content_type)
                 except Exception as e:
                     print(e.__str__())
-                if (extension is None):
-                    extension = '.png'
-                image_name = "{0}{1}".format(str(index), extension)
-                image_path = os.path.join(folder, image_name)
-                with open(image_path, "wb") as f:                    
-                    f.write(r2.content)
-                    index = index + 1
-                prediction = Prediction(self.website, image_path, image_name, url_folderName, False)
-                print('image_path : ' + image_path)
-                if prediction.predict() >= settings.stoping_threshold:
-                    return False
-                return True
+                if extension is not None and is_valid_image(extension):
+                    image_name = "{0}{1}".format(str(index), extension)
+                    image_path = os.path.join(folder, image_name)
+                    with open(image_path, "wb") as f:                    
+                        f.write(r2.content)
+                        index = index + 1
+                    prediction = Prediction(self.website, image_path, image_name, url_folderName, False)
+                    print('image_path : ' + image_path)
+                    if prediction.predict() >= settings.stoping_threshold:
+                        return False
+                    return True
+                return False
         except Exception as e:
             print('save image: ' + e.__str__())
             return True
