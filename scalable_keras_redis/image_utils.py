@@ -59,7 +59,7 @@ def _crop_image_helper(im, url, website, box, dest_folder, count, name = "0"):
         a.save(file_path)
         predict = Prediction(url, file_path, file_name, website, True)
         count[0] = count_value
-        if predict.predict() >= settings.stoping_threshold:
+        if predict.predict() >= settings.stoping_threshold or count_value >= 50:
             return False
         return True
     except Exception as e:
