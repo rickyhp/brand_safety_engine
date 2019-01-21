@@ -36,7 +36,7 @@ class Download_Image(object):
                     extension = mimetypes.guess_extension(content_type)
                 except Exception as e:
                     print(e.__str__())
-                if (extension is None and is_valid_image(image)) or is_valid_image(extension):
+                if (extension is None and is_valid_image(image)) or (extension is not None and is_valid_image(extension)):
                     image_name = "{0}{1}".format(str(index), extension)
                     image_path = os.path.join(folder, image_name)
                     with open(image_path, "wb") as f:                    
