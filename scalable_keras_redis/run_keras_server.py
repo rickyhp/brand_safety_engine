@@ -181,8 +181,8 @@ def get_final_results():
 if __name__ == "__main__":
 	# load the function used to classify input images in a *separate*
 	# thread than the one used for main classification
-	mongo = Mongodb_helper()
-	mongo.Drop_DataBase(settings.MONGODB_NAME)
+	#mongo = Mongodb_helper()
+	#mongo.Drop_DataBase(settings.MONGODB_NAME)
 	# start the web server
 	print("* Starting web service...")
 	app.run(host='0.0.0.0')
