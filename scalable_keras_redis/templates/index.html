@@ -47,8 +47,8 @@
               <thead>
                 <tr>
                   <th>Category</th>
-                   <th>Image Score</th>
-                  <th>Text Score</th>
+                   <th ng-if="runImage=='yes'">Image Score</th>
+                  <th ng-if="runText=='yes'">Text Score</th>
                 </tr>
                 
               </thead>
@@ -56,10 +56,10 @@
               {% raw %}
                 <tr ng-repeat="(key, value) in finalResults['probabilities']">
                   <td><font size="4">{{key}}</td>
-                  <td><font size="4">{{value}}</td>  
-				  <td ng-if="key == 'Alcohol'"><font size="4">{{textalcohol}}</td>
-                  <td ng-if="key == 'Gambling'"><font size="4">{{textgambling}}</td>
-                  <td ng-if="key == 'Nudity'"><font size="4">{{textnudity}}</td>
+                  <td ng-if="runImage=='yes'"><font size="4">{{value}}</td>  
+				  <td ng-if="key == 'Alcohol' && runText == 'yes'"><font size="4">{{textalcohol}}</td>
+                  <td ng-if="key == 'Gambling' && runText == 'yes'"><font size="4">{{textgambling}}</td>
+                  <td ng-if="key == 'Nudity' && runText == 'yes'"><font size="4">{{textnudity}}</td>
                 </tr>
               {% endraw %}
               </tbody>
